@@ -1,3 +1,9 @@
 import "./styles.css";
+import { setupButtonListener } from "./ui";
 
-console.log("This is goldenvertex's default template");
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupButtonListener('location-input-btn');
+})
+
+
