@@ -23,11 +23,13 @@ export async function processWeatherData(location) {
     const city = data.address;
     const day = data.days[0].datetime;
     const timestamp = data.currentConditions.datetimeEpoch*1000;
+    const timezone = data.timezone;
     const temp = data.currentConditions.temp;
     const tempMax = data.days[0].tempmax;
     const tempMin = data.days[0].tempmin;
     const feelsLike = data.currentConditions.feelslike;
-    const precip = data.currentConditions.precip;
+    const precipprob = data.currentConditions.precipprob;
+    const preciptype = data.currentConditions.preciptype;
     const windSpeed = data.currentConditions.windspeed;
     const windDir = data.currentConditions.winddir;
     const humidity = data.currentConditions.humidity;
@@ -40,11 +42,13 @@ export async function processWeatherData(location) {
         city,
         day,
         timestamp,
+        timezone,
         temp, 
         tempMax, 
         tempMin, 
         feelsLike, 
-        precip, 
+        precipprob,
+        preciptype, 
         windSpeed,
         windDir,
         humidity,
