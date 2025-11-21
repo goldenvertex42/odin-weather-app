@@ -1,5 +1,5 @@
 import { processWeatherData } from "./services";
-import { farenheitToCelsius, slideToggle } from "./utils";
+import { farenheitToCelsius, slideToggle, getIconComponent, generateWindDirection, determinePressureLevel, determineVisibility, determineBeaufortScale, determineDayOrNight, getBackgroundImageUrl, getImageSrc, getAttribution } from "./utils";
 
 export function setupButtonListener(buttonId) {
     const weatherBtn = document.getElementById(buttonId);
@@ -13,31 +13,141 @@ export function setupButtonListener(buttonId) {
 
 export async function displayWeather(location) {
     const weather = await processWeatherData(location);
-    const infoContainer = document.querySelector('.weather-info-card');
-    infoContainer.textContent = '';
+    const dateHour = new Intl.DateTimeFormat('en-US', { hour: '2-digit', hourCycle: 'h24' }).format(weather.timestamp);
+    const hourResolved = determineDayOrNight(dateHour);
+    const newBackgroundImage = await getBackgroundImageUrl(weather.icon, hourResolved);
+    const imageName = getImageSrc(weather.icon, hourResolved);
+    document.body.style.backgroundImage = `url(${newBackgroundImage})`;
+    const attributionPara = document.getElementById('photo-attribution');
+    attributionPara.innerHTML = getAttribution(`${imageName}.jpg`);
+    
 
-    const city = document.createElement('h2');
+    const generalIcon = await getIconComponent(weather.icon);
+    const windSpeedMiles = weather.windSpeed;
+    const windSpeedBeaufort = determineBeaufortScale(windSpeedMiles);
+    const windIcon = await getIconComponent(`wind-beaufort-${windSpeedBeaufort}`);
+    const compassIcon = await getIconComponent('compass');
+    const humidityIcon = await getIconComponent('humidity');
+    const pressureIcon = await getIconComponent(`pressure-${determinePressureLevel(weather.pressure)}`);
+    const uvIcon = await getIconComponent(`uv-index-${weather.uvIndex}`);
+    
+    const infoContainer = document.querySelector('.info-container');
+    infoContainer.textContent = '';
+   
+    const headerContainer = document.createElement('div');
+    headerContainer.className = 'header-container';
+
+    const cityAndDateBox = document.createElement('div');
+    cityAndDateBox.className = 'city-and-date';
+
+    const city = document.createElement('span');
     city.classList.add('city-name');
     city.textContent = weather.city;
     
-    const dateObject = new Date(weather.timestamp);
-    const dateText = dateObject.toLocaleString('en-us', 
-        {hour12: true, weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'});
-    const dateElement = document.createElement('h3');
+    const timezone = weather.timezone;
+    const dateText = new Intl.DateTimeFormat('en-us', 
+        {dateStyle: 'full', timeStyle: 'short', timeZone: `${timezone}`}
+    ).format(weather.timestamp);
+    const dateElement = document.createElement('span');
     dateElement.classList.add('date');
     dateElement.textContent = dateText;
+    
+    cityAndDateBox.append(city, dateElement);
+
+    const generalIconElement = document.createElement('img');
+    generalIconElement.className = 'gen-icon';
+    generalIconElement.src = generalIcon;
+
+    const description = document.createElement('span');
+    description.id = 'description';
+    description.textContent = weather.description;
+
+    headerContainer.append(cityAndDateBox, generalIconElement, description);
+
+    const precipBox = document.createElement('div');
+    precipBox.className = 'precip-box';
+
+    const precipHeaderText = document.createElement('span');
+    precipHeaderText.classList.add('precip-header', 'header');
+    precipHeaderText.textContent = 'PRECIPITATION';
+
+    const chanceOfPrecip = document.createElement('span');
+    chanceOfPrecip.id = 'chance-of-precip';
+    chanceOfPrecip.textContent = `Chance of precipitation: ${weather.precipprob}%`;
+    if (weather.preciptype) {
+        chanceOfPrecip.textContent = `Chance of precipitation: ${weather.precipprob}% in the form of ${weather.preciptype}`;
+    }
+
+    const pressureBox = document.createElement('div');
+    pressureBox.className = 'pressure-box';
+    const pressureLabel = document.createElement('span');
+    pressureLabel.id = 'pressure-label';
+    pressureLabel.textContent = `Pressure: ${weather.pressure} mbar`
+    const pressureIconElement = document.createElement('img');
+    pressureIconElement.className = 'pressure-icon';
+    pressureIconElement.src = pressureIcon;
+    pressureBox.append(pressureLabel, pressureIconElement);
+
+    const visibility = document.createElement('span');
+    visibility.id = 'visibility';
+    visibility.textContent = `Visibility: ${determineVisibility(weather.visibility)}`;
+
+    const humidityBox = document.createElement('div');
+    humidityBox.className = 'humidity-box';
+    const humidityIconElement = document.createElement('img');
+    humidityIconElement.className = 'humidity-icon';
+    humidityIconElement.src = humidityIcon;
+    const humidityLabel = document.createElement('span');
+    humidityLabel.id = 'humidity-label';
+    humidityLabel.textContent = `Humidity: ${weather.humidity}%`;
+    humidityBox.append(humidityIconElement, humidityLabel);
+
+    precipBox.append(precipHeaderText, chanceOfPrecip, pressureBox, visibility, humidityBox);
 
     const tempContainer = document.createElement('div');
     tempContainer.className = 'temp-container';
+
+    const tempHeaderText = document.createElement('span');
+    tempHeaderText.classList.add('temp-header', 'header');
+    tempHeaderText.textContent = 'TEMPERATURE';
+
     const tempTextBox = document.createElement('div');
     tempTextBox.className = 'temp-text-box';
     const temp = document.createElement('span');
     temp.id = 'temp';
-    temp.textContent = weather.temp;
+    temp.textContent = `Temperature: ${weather.temp}`;
     const tempScale = document.createElement('span');
     tempScale.id = 'temp-scale';
-    tempScale.textContent = ' °F'
-    console.log(farenheitToCelsius(weather.temp))
+    tempScale.textContent = '°F';
+    tempTextBox.append(temp, tempScale);
+
+    const feelsLike = document.createElement('span');
+    feelsLike.id = 'feels-like';
+    feelsLike.textContent = `Feels like: ${weather.feelsLike}°F`;
+
+    const tempRange = document.createElement('span');
+    tempRange.id = 'temp-range';
+    tempRange.textContent = `Temperature Range: ${weather.tempMin} - ${weather.tempMax}°F`;
+
+    const uvBox = document.createElement('div');
+    uvBox.className = 'uv-box';
+    const uvLabel = document.createElement('span');
+    uvLabel.id = 'uv-label';
+    uvLabel.textContent = 'UV Index: ';
+    const uvIconElement = document.createElement('img');
+    uvIconElement.className = 'uv-icon';
+    uvIconElement.src = uvIcon;
+    if (weather.uvIndex === 0) {
+        uvLabel.textContent = 'UV Index: 0'
+        uvIconElement.src = '';
+    }
+    uvBox.append(uvLabel, uvIconElement);
+
+    const toggleContainer = document.createElement('div');
+    toggleContainer.className = 'toggle-container'; 
+    const fScale = document.createElement('span');
+    fScale.id = 'f-scale';
+    fScale.textContent = '°F';   
     const tempToggleBox = document.createElement('label');
     tempToggleBox.classList.add('toggle-box');
     tempToggleBox.for = 'checkbox';
@@ -46,29 +156,54 @@ export async function displayWeather(location) {
     checkbox.id = 'checkbox';
     const circle = document.createElement('div');
     circle.className = 'circle';
-    const fScale = document.createElement('span');
-    fScale.id = 'f-scale';
-    fScale.textContent = '°F';
     const cScale = document.createElement('span');
     cScale.id = 'c-scale';
     cScale.textContent = '°C';
-    tempTextBox.append(temp, tempScale)
     tempToggleBox.append(checkbox, circle);
-    tempContainer.append(tempTextBox, fScale, tempToggleBox, cScale);
-     
-    // WORKING ON DISPLAY: THINKING OF CHANGING H2 and H3 ELEMENTS TO P FOR EASIER STYLING; 
-    // TRYING TO LINE UP TOGGLE WITH TEMP; AS WELL AS TRYING TO FIGURE OUT HOW TO PUT THE LISTENER ON 
-    // THE TOGGLE ONLY AFTER IT'S CREATION
+    toggleContainer.append(fScale, tempToggleBox, cScale);
 
-    infoContainer.append(city, dateElement, tempContainer);
+    tempContainer.append(tempHeaderText, tempTextBox, feelsLike, tempRange, uvBox, toggleContainer);
+
+    const windBox = document.createElement('div');
+    windBox.className = 'wind-box';
+
+    const windHeaderText = document.createElement('span');
+    windHeaderText.classList.add('wind-header', 'header');
+    windHeaderText.textContent = 'WIND';
+
+    const windSpeedLabel = document.createElement('span');
+    windSpeedLabel.id = 'wind-speed-label';
+    windSpeedLabel.textContent = 'Wind Speed:'
+    const windIconElement = document.createElement('img');
+    windIconElement.className = 'wind-icon';
+    windIconElement.src = windIcon;
+
+    const windDirectionBox = document.createElement('div');
+    windDirectionBox.className = 'wind-direction-box';
+    const compassIconElement = document.createElement('img');
+    compassIconElement.className = 'compass-icon';
+    compassIconElement.src = compassIcon;
+    const windDirection = document.createElement('span');
+    windDirection.id = 'wind-direction-label';
+    windDirection.textContent = `Wind Direction: ${generateWindDirection(weather.windDir)}`;
+    windDirectionBox.append(compassIconElement, windDirection);
+    
+    windBox.append(windHeaderText, windSpeedLabel, windIconElement, windDirectionBox);
+
+    infoContainer.append(headerContainer, precipBox, tempContainer, windBox);
+
     tempToggleBox.addEventListener('click', slideToggle);
     tempToggleBox.addEventListener('click', () => {
         if (checkbox.checked) {
             tempScale.textContent = ' °C';
             temp.textContent = farenheitToCelsius(weather.temp);
+            tempRange.textContent = `Temperature Range: ${farenheitToCelsius(weather.tempMin)} - ${farenheitToCelsius(weather.tempMax)} °C`;
+            feelsLike.textContent = `Feels like: ${farenheitToCelsius(weather.feelsLike)} °C`;
         } else if (!checkbox.checked) {
             tempScale.textContent = ' °F';
             temp.textContent = weather.temp;
+            tempRange.textContent = `Temperature Range: ${weather.tempMin} - ${weather.tempMax} °F`;
+            feelsLike.textContent = `Feels like: ${weather.feelsLike} °F`;
         } 
     });
     
