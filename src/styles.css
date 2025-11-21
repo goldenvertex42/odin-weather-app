@@ -350,30 +350,59 @@ template {
 
 /** RESET END **/
 
+body {
+  background-image: url('./assets/background-images/foggy-day.jpg');
+  background-size: cover;
+}
+
+span {
+  margin: 0.3rem 0;
+}
+
+a {
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.5);
+}
+
 .main-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  height: 100vh;
+  width: 100vw;
+}
+
+#photo-attribution {
+  border-radius: 15px;
+  color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 0.3rem;
+  font-size: small;
 }
 
 .location-input-container {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  gap: 0.625rem;
+  gap: 12px;
 }
 
 #location-input {
   padding: 15px;
   margin: 10px 0;
   height: 0.4rem;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 5px;
   font-size: 16px;
+}
+
+#location-input:focus {
+  outline: none;
+  border-color: #0000FF;
+  box-shadow: 0 0 0 2px #0000FF;
 }
 
 #location-input-btn {
@@ -392,23 +421,121 @@ template {
   background-color: #1565C0;
 }
 
-.weather-info-card {
+.info-container {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: max-content max-content;
+  row-gap: 3rem;
+}
+
+.header {
+  border-bottom: 1px solid black;
+  margin-bottom: 0.5rem;
+}
+
+.header-container {
+  grid-column: 1 / 4;
+  grid-row: 1 / 2;
   display: flex;
-  justify-content: center;
   flex-direction: column;
-  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.city-and-date {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 0.5rem;
+}
+
+.city-name {
+  font-size: 3rem;
+}
+
+.date {
+  font-size: 1.4rem;
+}
+
+.gen-icon {
+  display: inline;
+  width: 8rem;         
+  height: auto;       
+  margin: 0 4px;       
+  border-radius: 4px;  
+}
+
+#description {
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.precip-box {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 3px 3px 3px 6px;
+  padding: 0.3rem;
+}
+
+span#chance-of-precip {
+  margin: 0.3rem 0 0 0;
+}
+
+span#pressure-label {
+  margin: 0;
 }
 
 .temp-container {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: start;
   align-items: center;
-  margin: 0.625rem 0;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 0.3rem;
+  margin: 3px;
 }
 
 .temp-text-box {
-  flex-grow: 2;
   display: flex;
+  margin: 0.3rem;
+}
+
+#temp {
+  margin: 0;
+}
+
+#temp-scale {
+  margin: 0;
+}
+
+#uv-label {
+  margin: 0;
+}
+
+.uv-box {
+  margin: 0.3rem;
+}
+
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .toggle-box {
@@ -442,4 +569,59 @@ input[type='checkbox'] {
   margin: 0.063rem;
   transition: 0.5s;
   left: 0;
+}
+
+.wind-box {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 3px 6px 3px 3px;
+  padding: 0.3rem;
+}
+
+span#wind-direction-label {
+  margin-right: 0.3rem;
+}
+
+.humidity-box, .pressure-box, .wind-direction-box {
+  display: flex;
+  justify-self: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.humidity-icon, .pressure-icon, .compass-icon {
+  display: block;
+  width: 3rem;         
+  height: auto;             
+  border-radius: 4px;  
+}
+
+.wind-icon {
+  display: inline;
+  width: 4rem;         
+  height: auto;             
+  border-radius: 4px;
+  background-color: rgba(175, 175, 175, 0.5); 
+}
+
+summary {
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: rgba(175, 175, 175, 0.5); 
+  list-style: none;
+}
+
+div.attribution-content {
+  font-size: small;
+  padding: 10px 20px;
+  border-left: 2px solid #ccc;
+  margin-top: 5px;
+  border-radius: 4px;
+  background-color: rgba(175, 175, 175, 0.5); 
 }
