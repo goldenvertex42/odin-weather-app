@@ -1,7 +1,13 @@
 async function fetchWeatherData(location) {
     const apiKey = '6YF4TVLSPUDCS58DTLN5FCCES';
     const baseURL = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
-    const url = `${baseURL}${location}?unitGroup=us&key=${apiKey}&contentType=json&iconSet=icons2`
+    const url = `${baseURL}${location}?unitGroup=us&key=${apiKey}&contentType=json&iconSet=icons2`;
+    const loader = document.getElementById('loader');
+    if (document.querySelector('.info-container')) {
+        document.querySelector('.info-container').textContent = '';
+    }
+
+    loader.style.display = 'block';
 
     try {
         const response = await fetch(url);
@@ -16,6 +22,8 @@ async function fetchWeatherData(location) {
     } catch (error) {
         console.error("Error fetching weather data:", error);
         return null;
+    } finally {
+        loader.style.display = 'none';
     }
 }
 export async function processWeatherData(location) {
