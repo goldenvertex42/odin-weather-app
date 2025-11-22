@@ -625,3 +625,15 @@ div.attribution-content {
   border-radius: 4px;
   background-color: rgba(175, 175, 175, 0.5); 
 }
+
+.loader-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#loader {
+  display: none;
+  width: 4rem;
+  height: auto;
+}
