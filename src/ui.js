@@ -24,7 +24,7 @@ export async function displayWeather(location) {
     attributionPara.innerHTML = getAttribution(`${imageName}.jpg`);
     
 
-    const generalIcon = await getIconComponent(weather.icon);
+    const generalIcon = await getIconComponent(weather.icon, hourResolved);
     const windSpeedMiles = weather.windSpeed;
     const windSpeedBeaufort = determineBeaufortScale(windSpeedMiles);
     const windIcon = await getIconComponent(`wind-beaufort-${windSpeedBeaufort}`);
