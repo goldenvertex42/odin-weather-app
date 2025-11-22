@@ -13,8 +13,10 @@ export function setupButtonListener(buttonId) {
 
 export async function displayWeather(location) {
     const weather = await processWeatherData(location);
-    const dateHour = new Intl.DateTimeFormat('en-US', { hour: '2-digit', hourCycle: 'h24' }).format(weather.timestamp);
+    const timezone = weather.timezone;
+    const dateHour = new Intl.DateTimeFormat('en-us', { hour: 'numeric', hour12: false, timeZone: `${timezone}` }).format(weather.timestamp);
     const hourResolved = determineDayOrNight(dateHour);
+    
     const newBackgroundImage = await getBackgroundImageUrl(weather.icon, hourResolved);
     const imageName = getImageSrc(weather.icon, hourResolved);
     document.body.style.backgroundImage = `url(${newBackgroundImage})`;
@@ -44,10 +46,11 @@ export async function displayWeather(location) {
     city.classList.add('city-name');
     city.textContent = weather.city;
     
-    const timezone = weather.timezone;
     const dateText = new Intl.DateTimeFormat('en-us', 
         {dateStyle: 'full', timeStyle: 'short', timeZone: `${timezone}`}
     ).format(weather.timestamp);
+    console.log(dateHour);
+    console.log(dateText);
     const dateElement = document.createElement('span');
     dateElement.classList.add('date');
     dateElement.textContent = dateText;
