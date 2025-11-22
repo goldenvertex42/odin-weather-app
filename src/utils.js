@@ -68,10 +68,14 @@ export function determineBeaufortScale(windSpeed) {
         return 12;
     }
 } 
-export async function getIconComponent(iconCode) {
-    const iconName = iconCode;
+export async function getIconComponent(iconCode, hour) {
+    let iconName = iconCode;
     if (iconCode === 'snow-showers-day' || iconCode === 'snow-showers-night') {
         iconName = 'snow';
+    } else if (iconCode === 'fog' && hour === 'day') {
+        iconName = 'fog-day';
+    } else if (iconCode === 'fog' && hour === 'night') {
+        iconName = 'fog-night';
     }
 
     return await import(`./assets/icons/${iconName}.svg`)
