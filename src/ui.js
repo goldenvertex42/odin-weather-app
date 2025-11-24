@@ -25,8 +25,10 @@ export async function displayWeather(location) {
     
 
     const generalIcon = await getIconComponent(weather.icon, hourResolved);
-    const windSpeedMiles = weather.windSpeed;
+    const windSpeedMiles = Math.round(weather.windSpeed);
+    console.log(windSpeedMiles);
     const windSpeedBeaufort = determineBeaufortScale(windSpeedMiles);
+    console.log(windSpeedBeaufort);
     const windIcon = await getIconComponent(`wind-beaufort-${windSpeedBeaufort}`);
     const compassIcon = await getIconComponent('compass');
     const humidityIcon = await getIconComponent('humidity');
