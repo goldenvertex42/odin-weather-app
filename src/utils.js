@@ -13,6 +13,22 @@ const imageAttributions = {
     "thunder-night.jpg": `Photo by <a href="https://unsplash.com/@jimtography?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">James Graham</a> on <a href="https://unsplash.com/photos/a-lightning-storm-is-seen-over-a-body-of-water-wUw5-mPkpmw?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>`,
 }
 
+export function ensureCapitalization(city) {
+    const cityRaw = city.toLowerCase().split(' ');
+    const capitalizedCity = cityRaw.map(word => {
+        if (word.length === 0) return '';
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    });
+
+    return capitalizedCity.join(' ');
+
+}
+
+export function processTimeZone(string) {
+    const str = string;
+    return str.replace(/_/g, ' ');
+}
+
 export function getAttribution(src) {
     if (imageAttributions[src]) {
         return imageAttributions[src];
