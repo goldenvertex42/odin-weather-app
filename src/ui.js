@@ -1,5 +1,5 @@
 import { processWeatherData } from "./services";
-import { farenheitToCelsius, slideToggle, getIconComponent, generateWindDirection, determinePressureLevel, determineVisibility, determineBeaufortScale, determineDayOrNight, getBackgroundImageUrl, getImageSrc, getAttribution } from "./utils";
+import { farenheitToCelsius, slideToggle, getIconComponent, generateWindDirection, determinePressureLevel, determineVisibility, determineBeaufortScale, determineDayOrNight, getBackgroundImageUrl, getImageSrc, getAttribution, ensureCapitalization, processTimeZone } from "./utils";
 
 export function setupButtonListener(buttonId) {
     const weatherBtn = document.getElementById(buttonId);
@@ -26,9 +26,7 @@ export async function displayWeather(location) {
 
     const generalIcon = await getIconComponent(weather.icon, hourResolved);
     const windSpeedMiles = Math.round(weather.windSpeed);
-    console.log(windSpeedMiles);
     const windSpeedBeaufort = determineBeaufortScale(windSpeedMiles);
-    console.log(windSpeedBeaufort);
     const windIcon = await getIconComponent(`wind-beaufort-${windSpeedBeaufort}`);
     const compassIcon = await getIconComponent('compass');
     const humidityIcon = await getIconComponent('humidity');
@@ -46,18 +44,20 @@ export async function displayWeather(location) {
 
     const city = document.createElement('span');
     city.classList.add('city-name');
-    city.textContent = weather.city.charAt(0).toUpperCase() + weather.city.slice(1);
+    city.textContent = ensureCapitalization(weather.city);
+
+    const displayTimezone = document.createElement('span');
+    displayTimezone.classList.add('timezone');
+    displayTimezone.textContent = processTimeZone(timezone);
     
     const dateText = new Intl.DateTimeFormat('en-us', 
         {dateStyle: 'full', timeStyle: 'short', timeZone: `${timezone}`}
     ).format(weather.timestamp);
-    console.log(dateHour);
-    console.log(dateText);
     const dateElement = document.createElement('span');
     dateElement.classList.add('date');
     dateElement.textContent = dateText;
     
-    cityAndDateBox.append(city, dateElement);
+    cityAndDateBox.append(city, displayTimezone, dateElement);
 
     const generalIconElement = document.createElement('img');
     generalIconElement.className = 'gen-icon';
