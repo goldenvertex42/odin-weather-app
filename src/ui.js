@@ -44,7 +44,7 @@ export async function displayWeather(location) {
 
     const city = document.createElement('span');
     city.classList.add('city-name');
-    city.textContent = weather.city;
+    city.textContent = weather.city.charAt(0).toUpperCase() + weather.city.slice(1);
     
     const dateText = new Intl.DateTimeFormat('en-us', 
         {dateStyle: 'full', timeStyle: 'short', timeZone: `${timezone}`}
