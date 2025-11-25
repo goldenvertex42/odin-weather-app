@@ -28,7 +28,7 @@ async function fetchWeatherData(location) {
 }
 export async function processWeatherData(location) {
     const data = await fetchWeatherData(location);
-    const city = data.address;
+    const city = data.resolvedAddress;
     const day = data.days[0].datetime;
     const timestamp = data.currentConditions.datetimeEpoch*1000;
     const timezone = data.timezone;
